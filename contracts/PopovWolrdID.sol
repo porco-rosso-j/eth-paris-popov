@@ -23,28 +23,9 @@ contract PopovWolrdID is Initializable {
 
     /// @dev Whether a nullifier hash has been used already. Used to guarantee an action is only performed once by a single person
     mapping(uint256 => bool) internal nullifierHashes;
+    mapping(address => uint) public addressToNullifier; // account => nullifier
+    mapping(uint => address) public nullifierToAddress; // nullifier => account
 
-    // mapping(address => mapping(uint => bool)) internal accountIDs;
-
-    mapping(address => uint) public addressToNullifier;
-    mapping(uint => address) public nullifierToAddress;
-
-    // /// @param _worldId The WorldID instance that will verify the proofs
-    // /// @param _appId The World ID app ID
-    // /// @param _actionId The World ID action ID
-    // constructor(
-    //     IWorldID _worldId,
-    //     string memory _appId,
-    //     string memory _actionId
-    // ) {
-    //     worldId = _worldId;
-    //     externalNullifier = abi
-    //         .encodePacked(abi.encodePacked(_appId).hashToField(), _actionId)
-    //         .hashToField();
-    // }
-    constructor() {}
-
-    //
     function _initializeWoldID(
         IWorldID _worldId,
         string memory _appId,
@@ -69,8 +50,6 @@ contract PopovWolrdID is Initializable {
     ) public {
         // First, we make sure this person hasn't done this before
         if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
-
-        // require(is in the list?) or make it virtual.
 
         require(
             addressToNullifier[msg.sender] == 0 &&
