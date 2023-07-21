@@ -1,0 +1,12 @@
+artifacts
+build
+cache
+
+deployments
+typechain
+typechain-types
+
+node_modules
+.DS_Store
+.env
+trash/
