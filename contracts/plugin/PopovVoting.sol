@@ -9,21 +9,28 @@ import {RATIO_BASE, _applyRatioCeiled} from "@aragon/osx/plugins/utils/Ratio.sol
 
 import {IMembership} from "@aragon/osx/core/plugin/membership/IMembership.sol";
 import {Addresslist} from "@aragon/osx/plugins/utils/Addresslist.sol";
-import {IMajorityVoting} from "../IMajorityVoting.sol";
+import {IMajorityVoting} from "../interfaces/IMajorityVoting.sol";
 import {MajorityVotingBase} from "../MajorityVotingBase.sol";
+import {PopovWolrdID} from "../PopovWolrdID.sol";
+import {IWorldID} from "../interfaces/IWorldID.sol";
 
-/// @title AddresslistVoting
-/// @author Aragon Association - 2021-2023.
+/// @title PopovVoting
+/// @author Porco Rosso.
 /// @notice The majority voting implementation using a list of member addresses.
 /// @dev This contract inherits from `MajorityVotingBase` and implements the `IMajorityVoting` interface.
-contract AddresslistVoting is IMembership, Addresslist, MajorityVotingBase {
+contract PopovVoting is
+    IMembership,
+    Addresslist,
+    MajorityVotingBase,
+    PopovWolrdID
+{
     using SafeCastUpgradeable for uint256;
 
     /// @notice The [ERC-165](https://eips.ethereum.org/EIPS/eip-165) interface ID of the contract.
-    bytes4 internal constant ADDRESSLIST_VOTING_INTERFACE_ID =
+    bytes4 internal constant POPOV_VOTING_INTERFACE_ID =
         this.initialize.selector ^
             this.addAddresses.selector ^
-            this.removeAddresses.selector;
+            this.removeAddresses.selector; // add another selector
 
     /// @notice The ID of the permission required to call the `addAddresses` and `removeAddresses` functions.
     bytes32 public constant UPDATE_ADDRESSES_PERMISSION_ID =
@@ -36,9 +43,14 @@ contract AddresslistVoting is IMembership, Addresslist, MajorityVotingBase {
     function initialize(
         IDAO _dao,
         VotingSettings calldata _votingSettings,
-        address[] calldata _members
+        address[] calldata _members,
+        address _worldId,
+        string memory _appId,
+        string memory _actionId
     ) external initializer {
         __MajorityVotingBase_init(_dao, _votingSettings);
+
+        _initializeWoldID(IWorldID(_worldId), _appId, _actionId);
 
         _addAddresses(_members);
         emit MembersAdded({members: _members});
@@ -51,7 +63,7 @@ contract AddresslistVoting is IMembership, Addresslist, MajorityVotingBase {
         bytes4 _interfaceId
     ) public view virtual override returns (bool) {
         return
-            _interfaceId == ADDRESSLIST_VOTING_INTERFACE_ID ||
+            _interfaceId == POPOV_VOTING_INTERFACE_ID ||
             _interfaceId == type(Addresslist).interfaceId ||
             _interfaceId == type(IMembership).interfaceId ||
             super.supportsInterface(_interfaceId);
@@ -193,6 +205,8 @@ contract AddresslistVoting is IMembership, Addresslist, MajorityVotingBase {
         }
     }
 
+    // function recoverVote() public {}
+
     /// @inheritdoc MajorityVotingBase
     function _canVote(
         uint256 _proposalId,
@@ -213,6 +227,11 @@ contract AddresslistVoting is IMembership, Addresslist, MajorityVotingBase {
 
         // The voter has no voting power.
         if (!isListedAtBlock(_account, proposal_.parameters.snapshotBlock)) {
+            return false;
+        }
+
+        // The voter hasn't been verified by worldID
+        if (addressToNullifier[_account] == 0) {
             return false;
         }
 

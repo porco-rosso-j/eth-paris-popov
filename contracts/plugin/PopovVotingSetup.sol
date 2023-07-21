@@ -7,18 +7,18 @@ import {DAO} from "@aragon/osx/core/dao/DAO.sol";
 import {PermissionLib} from "@aragon/osx/core/permission/PermissionLib.sol";
 import {PluginSetup, IPluginSetup} from "@aragon/osx/framework/plugin/setup/PluginSetup.sol";
 import {MajorityVotingBase} from "../MajorityVotingBase.sol";
-import {AddresslistVoting} from "./AddresslistVoting.sol";
+import {PopovVoting} from "./PopovVoting.sol";
 
-/// @title AddresslistVotingSetup
-/// @author Aragon Association - 2022-2023
-/// @notice The setup contract of the `AddresslistVoting` plugin.
-contract AddresslistVotingSetup is PluginSetup {
-    /// @notice The address of `AddresslistVoting` plugin logic contract to be used in creating proxy contracts.
-    AddresslistVoting private immutable addresslistVotingBase;
+/// @title PopovVotingSetup
+/// @author Porco Rosso
+/// @notice The setup contract of the `PopovVoting` plugin.
+contract PopovVotingSetup is PluginSetup {
+    /// @notice The address of `PopovVoting` plugin logic contract to be used in creating proxy contracts.
+    PopovVoting private immutable popovVotingBase;
 
-    /// @notice The contract constructor, that deploys the `AddresslistVoting` plugin logic contract.
+    /// @notice The contract constructor, that deploys the `PopovVoting` plugin logic contract.
     constructor() {
-        addresslistVotingBase = new AddresslistVoting();
+        popovVotingBase = new PopovVoting();
     }
 
     /// @inheritdoc IPluginSetup
@@ -32,17 +32,32 @@ contract AddresslistVotingSetup is PluginSetup {
         // Decode `_data` to extract the params needed for deploying and initializing `AddresslistVoting` plugin.
         (
             MajorityVotingBase.VotingSettings memory votingSettings,
-            address[] memory members
-        ) = abi.decode(_data, (MajorityVotingBase.VotingSettings, address[]));
+            address[] memory members,
+            address _worldID,
+            string memory _appId,
+            string memory _actionId
+        ) = abi.decode(
+                _data,
+                (
+                    MajorityVotingBase.VotingSettings,
+                    address[],
+                    address,
+                    string,
+                    string
+                )
+            );
 
         // Prepare and Deploy the plugin proxy.
         plugin = createERC1967Proxy(
-            address(addresslistVotingBase),
+            address(popovVotingBase),
             abi.encodeWithSelector(
-                AddresslistVoting.initialize.selector,
+                PopovVoting.initialize.selector,
                 _dao,
                 votingSettings,
-                members
+                members,
+                _worldID,
+                _appId,
+                _actionId
             )
         );
 
@@ -57,7 +72,7 @@ contract AddresslistVotingSetup is PluginSetup {
             plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            addresslistVotingBase.UPDATE_ADDRESSES_PERMISSION_ID()
+            popovVotingBase.UPDATE_ADDRESSES_PERMISSION_ID()
         );
 
         permissions[1] = PermissionLib.MultiTargetPermission(
@@ -65,7 +80,7 @@ contract AddresslistVotingSetup is PluginSetup {
             plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            addresslistVotingBase.UPDATE_VOTING_SETTINGS_PERMISSION_ID()
+            popovVotingBase.UPDATE_VOTING_SETTINGS_PERMISSION_ID()
         );
 
         permissions[2] = PermissionLib.MultiTargetPermission(
@@ -73,7 +88,7 @@ contract AddresslistVotingSetup is PluginSetup {
             plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            addresslistVotingBase.UPGRADE_PLUGIN_PERMISSION_ID()
+            popovVotingBase.UPGRADE_PLUGIN_PERMISSION_ID()
         );
 
         // Grant `EXECUTE_PERMISSION` of the DAO to the plugin.
@@ -106,7 +121,7 @@ contract AddresslistVotingSetup is PluginSetup {
             _payload.plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            addresslistVotingBase.UPDATE_ADDRESSES_PERMISSION_ID()
+            popovVotingBase.UPDATE_ADDRESSES_PERMISSION_ID()
         );
 
         permissions[1] = PermissionLib.MultiTargetPermission(
@@ -114,7 +129,7 @@ contract AddresslistVotingSetup is PluginSetup {
             _payload.plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            addresslistVotingBase.UPDATE_VOTING_SETTINGS_PERMISSION_ID()
+            popovVotingBase.UPDATE_VOTING_SETTINGS_PERMISSION_ID()
         );
 
         permissions[2] = PermissionLib.MultiTargetPermission(
@@ -122,7 +137,7 @@ contract AddresslistVotingSetup is PluginSetup {
             _payload.plugin,
             _dao,
             PermissionLib.NO_CONDITION,
-            addresslistVotingBase.UPGRADE_PLUGIN_PERMISSION_ID()
+            popovVotingBase.UPGRADE_PLUGIN_PERMISSION_ID()
         );
 
         permissions[3] = PermissionLib.MultiTargetPermission(
@@ -136,6 +151,6 @@ contract AddresslistVotingSetup is PluginSetup {
 
     /// @inheritdoc IPluginSetup
     function implementation() external view returns (address) {
-        return address(addresslistVotingBase);
+        return address(popovVotingBase);
     }
 }
