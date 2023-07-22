@@ -13,6 +13,8 @@ import {IMajorityVoting} from "../interfaces/IMajorityVoting.sol";
 import {MajorityVotingBase} from "../MajorityVotingBase.sol";
 import {PopovWolrdID} from "../PopovWolrdID.sol";
 import {IWorldID} from "../interfaces/IWorldID.sol";
+import {PopovLane} from "../hyperlane/PopovLane.sol";
+import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
 /// @title PopovVoting
 /// @author Porco Rosso.
@@ -22,9 +24,11 @@ contract PopovVoting is
     IMembership,
     Addresslist,
     MajorityVotingBase,
-    PopovWolrdID
+    PopovWolrdID,
+    PopovLane
 {
     using SafeCastUpgradeable for uint256;
+    using TypeCasts for bytes;
 
     /// @notice The [ERC-165](https://eips.ethereum.org/EIPS/eip-165) interface ID of the contract.
     bytes4 internal constant POPOV_VOTING_INTERFACE_ID =
@@ -206,6 +210,68 @@ contract PopovVoting is
     }
 
     // function recoverVote() public {}
+
+    // This function receives either setWorldID or vote call
+    // from remote chian via Hyperlane Messaging API.
+    function handle(
+        uint32 _origin,
+        bytes32 _sender,
+        bytes calldata _data
+    ) external override onlyMailbox {
+        require(
+            remoteVotingRouters[TypeCasts.bytes32ToAddress(_sender)],
+            "INVALID_ORIGIN"
+        );
+
+        (
+            bool _setIdOrVote,
+            uint _value,
+            address _sender,
+            bytes memory _params
+        ) = abi.decode(_data, (bool, uint, address, bytes));
+
+        if (_setIdOrVote) {
+            (
+                address signal,
+                uint root,
+                uint nullifierHash,
+                uint256[8] memory proof
+            ) = abi.decode(_params, (address, uint, uint, uint[8]));
+            // register
+            setWorldIDFromRemote(_sender, signal, root, nullifierHash, proof);
+        } else {
+            (
+                uint256 _proposalId,
+                uint _voteOptionNum,
+                address _voter,
+                bool _tryEarlyExecution
+            ) = abi.decode(_params, (uint256, uint, address, bool));
+
+            IMajorityVoting.VoteOption voteOp;
+            if (_voteOptionNum == 0) {
+                voteOp = IMajorityVoting.VoteOption.None;
+            } else if (_voteOptionNum == 1) {
+                voteOp = IMajorityVoting.VoteOption.Abstain;
+            } else if (_voteOptionNum == 2) {
+                voteOp = IMajorityVoting.VoteOption.Yes;
+            } else {
+                voteOp = IMajorityVoting.VoteOption.No;
+            }
+        }
+    }
+
+    // function _decodeRegistrationParams(
+    //     bytes memory _data
+    // ) internal pure returns () {
+    //     (
+    //         address signal,
+    //         uint root,
+    //         uint nullifierHash,
+    //         uint256[8] calldata proof
+    //     ) = abi.decode(_data, (address, uint, uint, uint[8]));
+
+    //     return (signal, root, nullifierHash, proof);
+    // }
 
     /// @inheritdoc MajorityVotingBase
     function _canVote(

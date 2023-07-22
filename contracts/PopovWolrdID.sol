@@ -72,7 +72,36 @@ contract PopovWolrdID is Initializable {
         nullifierToAddress[nullifierHash] = msg.sender;
     }
 
-    // function setWorldIDFromRemote() public;
+    function setWorldIDFromRemote(
+        address sender,
+        address signal,
+        uint256 root,
+        uint256 nullifierHash,
+        uint256[8] memory proof
+    ) public {
+        // First, we make sure this person hasn't done this before
+        if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
+
+        require(
+            addressToNullifier[sender] == 0 &&
+                nullifierToAddress[nullifierHash] == address(0),
+            "INVALID_REGISTRATION"
+        );
+
+        // We now verify the provided proof is valid and the user is verified by World ID
+        worldId.verifyProof(
+            root,
+            groupId,
+            abi.encodePacked(signal).hashToField(),
+            nullifierHash,
+            externalNullifier,
+            proof
+        );
+
+        nullifierHashes[nullifierHash] = true;
+        addressToNullifier[sender] = nullifierHash;
+        nullifierToAddress[nullifierHash] = sender;
+    }
 
     // function recover() public ;　// + called from recoverVote() in PopovVotingPlugin
 

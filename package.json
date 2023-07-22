@@ -13,6 +13,8 @@
         "@aragon/sdk-client": "^1.10.0-rc1",
         "@aragon/sdk-client-common": "^1.2.0-rc0",
         "@ensdomains/ens-contracts": "0.0.20",
+        "@hyperlane-xyz/core": "1.4.2",
+        "@hyperlane-xyz/sdk": "1.4.2",
         "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
         "@nomicfoundation/hardhat-network-helpers": "^1.0.6",
         "@nomicfoundation/hardhat-toolbox": "^2.0.0",
