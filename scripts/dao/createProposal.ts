@@ -3,8 +3,9 @@ import {getProposalMetadata} from './utils/ipfs-metadata';
 import artifacts from '@aragon/osx-artifacts';
 import {Client, VoteValues} from '@aragon/sdk-client';
 import {ethers} from 'ethers';
+import deployedContracts from "../../deployed_contracts.json"
 
-const PluginAddress = "0x6b27a9162d93bb13cdb730efcb696a21167e7952";
+const PluginAddress = deployedContracts.polygonMumbai.PluginProxy;
 
 async function createProposal() {
   const client: Client = new Client(context);
