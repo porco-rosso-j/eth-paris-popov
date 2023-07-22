@@ -1,13 +1,11 @@
-import addresslistBuildMetadata from '../../contracts/majority-voting/addresslist/build-metadata.json';
-import addresslistReleaseMetadata from '../../contracts/majority-voting/addresslist/release-metadata.json';
+import popovBuildMetadata from '../../contracts/plugin/build-metadata.json';
+import popovReleaseMetadata from '../../contracts/plugin/release-metadata.json';
 import {
   networkNameMapping,
-  osxContracts,
   findEventTopicLog,
   addDeployedContract,
 } from '../../utils/helpers';
-import {toHex} from '../../utils/ipfs-upload';
-import {uploadToIPFS} from '../../utils/ipfs-upload';
+import {uploadToIPFS, toHex} from '../../utils/ipfs-upload';
 import {
   PluginRepoFactory__factory,
   PluginRepoRegistry__factory,
@@ -17,11 +15,7 @@ import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  console.log(`\nCreating address-list-voting repo.`);
-
-  console.warn(
-    'Please make sure pluginRepo is not created more than once with the same name.'
-  );
+  console.log(`\nCreating popov-voting repo.`);
 
   const {deployments, network} = hre;
   const [deployer] = await hre.ethers.getSigners();
@@ -41,20 +35,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     deployer
   );
 
-  const addresslistReleaseCIDPath = await uploadToIPFS(
-    JSON.stringify(addresslistReleaseMetadata),
+  const popovReleaseCIDPath = await uploadToIPFS(
+    JSON.stringify(popovReleaseMetadata),
     false
   );
-  const addresslistBuildCIDPath = await uploadToIPFS(
-    JSON.stringify(addresslistBuildMetadata),
+  const popovBuildCIDPath = await uploadToIPFS(
+    JSON.stringify(popovBuildMetadata),
     false
   );
 
-  console.log(`Uploaded metadata of release 1: ${addresslistReleaseCIDPath}`);
-  console.log(`Uploaded metadata of build 1: ${addresslistBuildCIDPath}`);
+  console.log(`Uploaded metadata of release 1: ${popovReleaseCIDPath}`);
+  console.log(`Uploaded metadata of build 1: ${popovBuildCIDPath}`);
 
-  const pluginName = 'address-list-voting-plugin';
-  const pluginSetupContractName = 'AddresslistVotingSetup';
+  const pluginName = 'popov-voting-plugin2'; // shouln't be same as previous ones
+  const pluginSetupContractName = 'PopovVotingSetup';
 
   const setup = await deployments.get(pluginSetupContractName);
   toHex;
@@ -63,8 +57,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     pluginName,
     setup.address,
     deployer.address,
-    toHex(addresslistReleaseCIDPath),
-    toHex(addresslistBuildCIDPath),
+    toHex(popovReleaseCIDPath),
+    toHex(popovBuildCIDPath),
     {
       gasLimit: 1000000,
     }
@@ -93,4 +87,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 export default func;
-func.tags = ['AddresslistVotingRepo', 'PublishAddresslistVoting'];
+func.tags = ['PopovVotingRepo', 'PublishPopovVoting'];

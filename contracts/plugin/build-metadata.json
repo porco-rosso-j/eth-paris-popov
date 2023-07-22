@@ -48,6 +48,24 @@
           "name": "members",
           "type": "address[]",
           "description": "The addresses of the initial members to be added."
+        },
+        {
+          "internalType": "address",
+          "name": "_worldID",
+          "type": "address",
+          "description": "The address of worldID contract."
+        },
+        {
+          "internalType": "string",
+          "name": "_appId",
+          "type": "string",
+          "description": "The addresses of the initial members to be added."
+        },
+        {
+          "internalType": "string",
+          "name": "_actionId",
+          "type": "string",
+          "description": "The addresses of the initial members to be added."
         }
       ],
       "prepareUpdate": {

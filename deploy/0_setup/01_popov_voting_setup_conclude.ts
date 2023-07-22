@@ -1,22 +1,19 @@
-import {
-  AddresslistVoting__factory,
-  AddresslistVotingSetup__factory,
-} from '../../typechain';
+import { PopovVotingSetup__factory } from '../../typechain';
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {setTimeout} from 'timers/promises';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  console.log(`Concluding addresslist voting setup deployment.\n`);
+  console.log(`Concluding popov voting setup deployment.\n`);
   const {deployments, network, ethers} = hre;
   const [deployer] = await ethers.getSigners();
 
-  const setupDeployment = await deployments.get('AddresslistVotingSetup');
-  const setup = AddresslistVotingSetup__factory.connect(
+  const setupDeployment = await deployments.get('PopovVotingSetup');
+  const setup = PopovVotingSetup__factory.connect(
     setupDeployment.address,
     deployer
   );
-  const implementation = AddresslistVoting__factory.connect(
+  const implementation = PopovVotingSetup__factory.connect(
     await setup.implementation(),
     deployer
   );
@@ -38,4 +35,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 export default func;
-func.tags = ['New', 'AddresslistVotingSetup', 'Verify'];
+func.tags = ['New', 'PopovVotingSetup', 'Verify'];

@@ -4,8 +4,7 @@ import artifacts from '@aragon/osx-artifacts';
 import {Client, VoteValues} from '@aragon/sdk-client';
 import {ethers} from 'ethers';
 
-// const DAOAddress = '0x528225540aADB9c9aAfFdf1E89CF2630FA7FeCe5';
-const PluginAddress = '0x3d402c0ec82c563a3fca2307ef497dfb29399461';
+const PluginAddress = "0x6b27a9162d93bb13cdb730efcb696a21167e7952";
 
 async function createProposal() {
   const client: Client = new Client(context);
@@ -13,24 +12,25 @@ async function createProposal() {
   const proposalMetadata = await getProposalMetadata();
 
   // create contract instance
-  const addressListVoting = new ethers.Contract(
+  const popovVoting = new ethers.Contract(
     PluginAddress,
     artifacts.AddresslistVoting.abi,
     client.web3.getSigner()
   );
 
   // get next proposal Id
-  const proposalId = await getProposalId(addressListVoting);
+  const proposalId = await getProposalId(popovVoting);
 
   // create Proposal
   const tx = await (
-    await addressListVoting.createProposal(
+    await popovVoting.createProposal(
       proposalMetadata,
       [],
       1,
       0,
       0,
-      VoteValues.YES,
+      //VoteValues.YES,
+      0,
       true,
       {
         gasLimit: 300000,
@@ -40,7 +40,7 @@ async function createProposal() {
   console.log('tx: ', tx.transactionHash);
 
   // view the created proposal
-  const proposal = await addressListVoting.getProposal(proposalId);
+  const proposal = await popovVoting.getProposal(proposalId);
   console.log('proposal Id: ', proposalId);
   console.log('open: ', proposal.open); // should be true
   console.log('executed: ', proposal.executed); // should be false
@@ -56,15 +56,16 @@ createProposal().catch(error => {
 });
 
 async function getProposalId(
-  addressListVoting: ethers.Contract
+  popovVoting: ethers.Contract
 ): Promise<number> {
-  const id = await addressListVoting.callStatic.createProposal(
+  const id = await popovVoting.callStatic.createProposal(
     Buffer.from('0x00'),
     [],
     1,
     0,
     0,
-    VoteValues.YES,
+    //VoteValues.YES,
+    0,
     true
   );
   //console.log('id: ', id);

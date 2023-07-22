@@ -3,7 +3,7 @@ import artifacts from '@aragon/osx-artifacts';
 import {VoteValues} from '@aragon/sdk-client';
 import {ethers} from 'ethers';
 
-const PluginAddress = '0x3d402c0ec82c563a3fca2307ef497dfb29399461';
+const PluginAddress = '0x6b27a9162d93bb13cdb730efcb696a21167e7952';
 
 async function vote() {
   // wallet is the second member of the DAO

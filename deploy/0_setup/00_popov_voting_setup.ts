@@ -2,7 +2,7 @@ import {addDeployedContract} from '../../utils/helpers';
 import {DeployFunction} from 'hardhat-deploy/types';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
-const name = 'AddresslistVotingSetup';
+const name = 'PopovVotingSetup';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`\nDeploying plugins.`);
@@ -19,4 +19,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   addDeployedContract(network.name, name, result.address);
 };
 export default func;
-func.tags = ['New', 'AddresslistVotingSetup'];
+func.tags = ['New', 'PopovVotingSetup'];
