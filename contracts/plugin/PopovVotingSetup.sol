@@ -35,7 +35,9 @@ contract PopovVotingSetup is PluginSetup {
             address[] memory members,
             address _worldID,
             string memory _appId,
-            string memory _actionId
+            string memory _actionId,
+            address _mailbox,
+            address[] memory _popovLaneRemote
         ) = abi.decode(
                 _data,
                 (
@@ -43,7 +45,9 @@ contract PopovVotingSetup is PluginSetup {
                     address[],
                     address,
                     string,
-                    string
+                    string,
+                    address,
+                    address[]
                 )
             );
 
@@ -57,7 +61,9 @@ contract PopovVotingSetup is PluginSetup {
                 members,
                 _worldID,
                 _appId,
-                _actionId
+                _actionId,
+                _mailbox,
+                _popovLaneRemote
             )
         );
 

@@ -66,6 +66,18 @@
           "name": "_actionId",
           "type": "string",
           "description": "The addresses of the initial members to be added."
+        },
+        {
+          "internalType": "address",
+          "name": "_mailbox",
+          "type": "address",
+          "description": "The addresses of the initial members to be added."
+        },
+        {
+          "internalType": "address[]",
+          "name": "_popovLaneRemote",
+          "type": "address[]",
+          "description": "The addresses of the initial members to be added."
         }
       ],
       "prepareUpdate": {

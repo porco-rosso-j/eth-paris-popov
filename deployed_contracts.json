@@ -2,6 +2,11 @@
   "polygonMumbai": {
     "PopovVotingSetup": "0x6bD0c4941Ba6cb3ea7e2970FF078EA8639718283",
     "PluginRepo": "0x8B0CBf6977AC83EBc9043C661538c98d738B0E6E",
-    "PluginProxy": "0x6b27a9162d93bb13cdb730efcb696a21167e7952"
+    "PluginProxy": "0x59675173ff17d685d6da05a51003ce3dfb68e33b"
+  },
+  "goerli": {
+    "PopovVotingSetup": "0xdeF54D5c218d244B6A305Bf6aC1810bd3fB9b9cA",
+    "PluginRepo": "0x908F5FfBbBD4000f788865459Bdf37734cd56ea6",
+    "PluginProxy": "0x908F5FfBbBD4000f788865459Bdf37734cd56ea6"
   }
 }

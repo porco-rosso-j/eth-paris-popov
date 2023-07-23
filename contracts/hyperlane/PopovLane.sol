@@ -6,14 +6,14 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 contract PopovLane is IMessageRecipient, Initializable {
     address public mailbox;
 
-    mapping(address => bool) public remoteVotingRouters;
+    mapping(address => bool) public popovLaneRemotes;
 
     function _initializePopovLane(
         address _mailbox,
-        address[] memory _remoteVotingRouters
+        address[] memory _popovLaneRemote
     ) internal onlyInitializing {
         mailbox = _mailbox;
-        _registerRemoteVotingRouters(_remoteVotingRouters);
+        _registerPopovLaneRemotes(_popovLaneRemote);
     }
 
     modifier onlyMailbox() {
@@ -21,10 +21,12 @@ contract PopovLane is IMessageRecipient, Initializable {
         _;
     }
 
-    function _registerRemoteVotingRouters(address[] memory _routers) internal {
-        for (uint i; i < _routers.length; i++) {
-            require(_routers[i] != address(0), "INVALID_ADDRESS");
-            remoteVotingRouters[_routers[i]] = true;
+    function _registerPopovLaneRemotes(address[] memory _remotes) internal {
+        for (uint i; i < _remotes.length; i++) {
+            if (_remotes.length != 0) {
+                require(_remotes[i] != address(0), "INVALID_ADDRESS");
+            }
+            popovLaneRemotes[_remotes[i]] = true;
         }
     }
 

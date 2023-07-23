@@ -9,8 +9,10 @@ dotenv.config();
 // Set up your IPFS API key. You can get one either by running a local node or by using a service like Infura or Alechmy.
 // Make sure to always keep these private in a file that is not committed to your public repository.
 const IPFS_API_KEY: string = process.env.infura_api_key as string;
-export const rpc = ('https://polygon-mumbai.g.alchemy.com/v2/' +
-  process.env.ALCHEMY_MUMBAI_KEY) as string;
+// export const rpc = ('https://polygon-mumbai.g.alchemy.com/v2/' +
+//   process.env.ALCHEMY_MUMBAI_KEY) as string;
+export const rpc = ('https://eth-goerli.g.alchemy.com/v2/' +
+  process.env.ALCHEMY_GOERLI_KEY) as string;
 export const dev_pk = process.env.PRIVATE_KEY as string;
 export const dev_pk2 = process.env.PRIVATE_KEY2 as string;
 

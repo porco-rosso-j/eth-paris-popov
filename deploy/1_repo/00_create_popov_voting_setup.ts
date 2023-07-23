@@ -20,8 +20,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const {deployments, network} = hre;
   const [deployer] = await hre.ethers.getSigners();
 
-  let pluginRepoFactoryAddr: string =
-    '0x4E7c97ab08c046A8e43571f9839d768ae84492e4';
+  let pluginRepoFactoryAddr: string = "0x477EB3b39C92c38B43778266b09471285e0F7808"
+    // '0x4E7c97ab08c046A8e43571f9839d768ae84492e4'; // mumbai
   //osxContracts[networkNameMapping[network.name]].PluginRepoFactory;
 
   console.log(
@@ -47,7 +47,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Uploaded metadata of release 1: ${popovReleaseCIDPath}`);
   console.log(`Uploaded metadata of build 1: ${popovBuildCIDPath}`);
 
-  const pluginName = 'popov-voting-plugin2'; // shouln't be same as previous ones
+  const pluginName = 'popov-voting-plugin1'; // shouln't be same as previous ones
   const pluginSetupContractName = 'PopovVotingSetup';
 
   const setup = await deployments.get(pluginSetupContractName);

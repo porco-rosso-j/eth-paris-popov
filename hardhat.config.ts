@@ -25,7 +25,7 @@ const apiUrls: NetworkNameMapping = {
   arbitrumOne: 'https://arbitrumOne.infura.io/v3/',
   arbitrumGoerli: 'https://arbitrumGoerli.infura.io/v3/',
   mainnet: 'https://mainnet.infura.io/v3/',
-  goerli: 'https://goerli.infura.io/v3/',
+  goerli: 'https://eth-goerli.g.alchemy.com/v2/',
   polygon: 'https://polygon-mainnet.infura.io/v3/',
   polygonMumbai: 'https://polygon-mumbai.g.alchemy.com/v2/',
 };
@@ -57,7 +57,7 @@ const networks: {[index: string]: NetworkUserConfig} = {
   },
   goerli: {
     chainId: 5,
-    url: `${apiUrls.goerli}${process.env.INFURA_API_KEY}`,
+    url: `${apiUrls.goerli}${process.env.ALCHEMY_GOERLI_KEY}`,
   },
   polygon: {
     chainId: 137,
@@ -98,7 +98,7 @@ const config: HardhatUserConfig = {
       arbitrumOne: process.env.ARBISCAN_API_KEY || '',
       arbitrumGoerli: process.env.ARBISCAN_API_KEY || '',
       mainnet: process.env.ETHERSCAN_API_KEY || '',
-      goerli: process.env.ETHERSCAN_API_KEY || '',
+      goerli: process.env.GOERLI_ETHERSCAN_API_KEY || '',
       polygon: process.env.POLYGONSCAN_API_KEY || '',
       polygonMumbai: process.env.POLYGONSCAN_API_KEY || '',
     },

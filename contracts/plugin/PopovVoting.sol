@@ -4,15 +4,19 @@ pragma solidity 0.8.17;
 
 import {SafeCastUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
 
+// aragon
 import {IDAO} from "@aragon/osx/core/dao/IDAO.sol";
 import {RATIO_BASE, _applyRatioCeiled} from "@aragon/osx/plugins/utils/Ratio.sol";
-
 import {IMembership} from "@aragon/osx/core/plugin/membership/IMembership.sol";
 import {Addresslist} from "@aragon/osx/plugins/utils/Addresslist.sol";
 import {IMajorityVoting} from "../interfaces/IMajorityVoting.sol";
 import {MajorityVotingBase} from "../MajorityVotingBase.sol";
+
+// world id
 import {PopovWolrdID} from "../PopovWolrdID.sol";
 import {IWorldID} from "../interfaces/IWorldID.sol";
+
+// hyperlane
 import {PopovLane} from "../hyperlane/PopovLane.sol";
 import {TypeCasts} from "@hyperlane-xyz/core/contracts/libs/TypeCasts.sol";
 
@@ -50,11 +54,15 @@ contract PopovVoting is
         address[] calldata _members,
         address _worldId,
         string memory _appId,
-        string memory _actionId
+        string memory _actionId,
+        address _mailbox,
+        address[] memory _popovLaneRemote
     ) external initializer {
         __MajorityVotingBase_init(_dao, _votingSettings);
 
         _initializeWoldID(IWorldID(_worldId), _appId, _actionId);
+
+        _initializePopovLane(_mailbox, _popovLaneRemote);
 
         _addAddresses(_members);
         emit MembersAdded({members: _members});
@@ -219,26 +227,25 @@ contract PopovVoting is
         bytes calldata _data
     ) external override onlyMailbox {
         require(
-            remoteVotingRouters[TypeCasts.bytes32ToAddress(_sender)],
+            popovLaneRemotes[TypeCasts.bytes32ToAddress(_sender)],
             "INVALID_ORIGIN"
         );
 
-        (
-            bool _setIdOrVote,
-            uint _value,
-            address _sender,
-            bytes memory _params
-        ) = abi.decode(_data, (bool, uint, address, bytes));
+        (bool _setIdOrVote, bytes memory _params) = abi.decode(
+            _data,
+            (bool, bytes)
+        );
 
         if (_setIdOrVote) {
             (
+                address sender,
                 address signal,
                 uint root,
                 uint nullifierHash,
                 uint256[8] memory proof
-            ) = abi.decode(_params, (address, uint, uint, uint[8]));
+            ) = abi.decode(_params, (address, address, uint, uint, uint[8]));
             // register
-            setWorldIDFromRemote(_sender, signal, root, nullifierHash, proof);
+            setWorldIDFromRemote(sender, signal, root, nullifierHash, proof);
         } else {
             (
                 uint256 _proposalId,
@@ -257,21 +264,10 @@ contract PopovVoting is
             } else {
                 voteOp = IMajorityVoting.VoteOption.No;
             }
+
+            vote(_proposalId, voteOp, _tryEarlyExecution);
         }
     }
-
-    // function _decodeRegistrationParams(
-    //     bytes memory _data
-    // ) internal pure returns () {
-    //     (
-    //         address signal,
-    //         uint root,
-    //         uint nullifierHash,
-    //         uint256[8] calldata proof
-    //     ) = abi.decode(_data, (address, uint, uint, uint[8]));
-
-    //     return (signal, root, nullifierHash, proof);
-    // }
 
     /// @inheritdoc MajorityVotingBase
     function _canVote(
